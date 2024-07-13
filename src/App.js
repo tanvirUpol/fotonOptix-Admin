@@ -4,6 +4,7 @@ import AuthProvider from './context/AuthProvider';
 import NotFound from './components/NotFound';
 import ProductTable from './pages/ProductTable';
 import CreateProduct from './pages/CreateProduct';
+import Navbar from './components/Navbar';
 // import Home from './pages/Home';
 // import Login from './pages/Login';
 // import Dashboard from './pages/Dashboard';
@@ -12,6 +13,7 @@ import CreateProduct from './pages/CreateProduct';
 function App() {
   return (
     <AuthProvider>
+      <Navbar />
       <Routes>
         <Route path='/' element={<ProductTable />} />
         <Route path='/create-product' element={<CreateProduct />} />

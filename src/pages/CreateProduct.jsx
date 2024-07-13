@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-// import { useHistory } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { storage } from '../firebase/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { CgSpinner } from 'react-icons/cg';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import DataTable from '../components/DataTable';
+import { BsBoxSeam } from 'react-icons/bs';
 
 const CreateProduct = () => {
     const [subCategories, setSubCategories] = useState([]);
@@ -27,17 +27,11 @@ const CreateProduct = () => {
     });
     const [imageFiles, setImageFiles] = useState([]);
     const [schematicFile, setSchematicFile] = useState(null);
-    const [specificationInput, setSpecificationInput] = useState({
-        key: '',
-        value: ''
-    });
 
     const [data, setData] = useState([])
     const [rawData, setRawData] = useState([])
     const [loading, setLoading] = useState(false);
 
-
-    //   const history = useHistory();
 
 
     const fetchCat = () => {
@@ -228,9 +222,21 @@ const CreateProduct = () => {
     };
 
     return (
-        <div className="container mx-auto py-8 text-sm">
-            <h1 className="text-2xl font-bold mb-4">Create New Product</h1>
+        <div className="container lg:max-w-5xl mx-auto py-8 px-4 text-sm">
             <form onSubmit={handleSubmit}>
+            <div className='flex justify-between items-center mb-4'>
+                <h1 className="text-2xl font-bold  flex justify-center items-center gap-3">
+                    <BsBoxSeam className='w-6 h-6' />
+                    Upload Product
+                </h1>
+                <button
+                    type="submit"
+                    className="px-4 py-2  bg-teal-500 text-white rounded-md hover:bg-teal-600"
+                >
+                    Create Product
+                </button>
+            </div>
+            <hr className='my-4' />
                 <div className="mb-4">
                     <label className="uppercase block text-gray-700 font-medium mb-2">Name</label>
                     <input
@@ -305,11 +311,10 @@ const CreateProduct = () => {
                         className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4"
                     />
 
-                    <div className="mt-4">
+                    <div className=" flex">
                         {imageFiles.map((file, index) => (
                             <div key={index} className="flex items-center mb-2">
                                 <img onClick={() => handleRemoveImage(index)} src={URL.createObjectURL(file)} className="w-12 h-12 border p-2 object-cover mr-2 cursor-pointer" alt={`Upload ${index}`} />
-
                             </div>
                         ))}
                     </div>
@@ -337,45 +342,42 @@ const CreateProduct = () => {
                 {/* upload excel */}
                 {<div className="flex flex-col items-start gap-2 mt-2  ">
                     <p className=' font-medium uppercase'>Upload Specification File:</p>
-                    {data.length <= 0 && 
+                    {data.length <= 0 &&
 
-                    <>
-                    <label
-                        className="group cursor-pointer w-full flex flex-col justify-center items-center gap-5 bg-[#E1F0FF]/40 py-6 rounded-md border-2 bor border-dashed border-gray-500 hover:border-teal-500"
-                        htmlFor="upload"
-                    >
+                        <>
+                            <label
+                                className="group cursor-pointer w-full flex flex-col justify-center items-center gap-5 bg-[#E1F0FF]/40 py-6 rounded-md border-2 bor border-dashed border-gray-500 hover:border-teal-500"
+                                htmlFor="upload"
+                            >
 
-                        {data.length === 0 && !loading &&
-                            <>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-10 h-10 text-gray-500 group-hover:text-teal-500">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
-                                <span className="text-gray-700 font-medium mb-2 group-hover:text-teal-500 text-md text-center">
-                                    Click to upload excel (.xlsx)
-                                </span>
-                            </>
-                        }
-                    </label>
-                    <input
-                        type="file"
-                        accept=".xlsx, .xls, .xlsb"
-                        id='upload'
-                        onChange={handleFileChange}
-                        disabled={loading}
-                        className="py-2 px-4 border rounded file hidden"
-                    />
-                    <p className='text-right w-full text-gray-400 text-sm'>Supported format: XLS , XLSX , XLSB</p>
-                    </>
+                                {data.length === 0 && !loading &&
+                                    <>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-10 h-10 text-gray-500 group-hover:text-teal-500">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                        </svg>
+                                        <span className="text-gray-700 font-medium mb-2 group-hover:text-teal-500 text-md text-center">
+                                            Click to upload excel (.xlsx)
+                                        </span>
+                                    </>
+                                }
+                            </label>
+                            <input
+                                type="file"
+                                accept=".xlsx, .xls, .xlsb"
+                                id='upload'
+                                onChange={handleFileChange}
+                                disabled={loading}
+                                className="py-2 px-4 border rounded file hidden"
+                            />
+                            <p className='text-right w-full text-gray-400 text-sm'>Supported format: XLS , XLSX , XLSB</p>
+                        </>
                     }
-                   
-
-
                 </div>}
 
                 {rawData.length > 0 &&
                     <>
                         <div className='flex justify-end items-center gap-3'>
-                           
+
                             <button
                                 className="py-2 px-3 flex justify-center items-center gap-2 bg-rose-900  text-white rounded mb-4
                                 "
@@ -388,12 +390,6 @@ const CreateProduct = () => {
                     </>
                 }
 
-                <button
-                    type="submit"
-                    className="px-4 py-2 mt-4 bg-teal-500 text-white rounded-md hover:bg-teal-600"
-                >
-                    Create Product
-                </button>
             </form>
         </div>
     );
