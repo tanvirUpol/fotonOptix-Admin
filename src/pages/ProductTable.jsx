@@ -66,7 +66,11 @@ const ProductTable = () => {
                 <td className="px-6 font-medium text-gray-900">
                   <img src={product?.image[0]} className='w-7 h-7 border bg-slate-200' alt="" placeholder='image'/>
                 </td>
-                <td className="py-3 px-6 font-medium text-gray-900">{product.name}</td>
+                <td className="py-3 px-6 font-medium text-gray-900">
+                  <Link to={`update-product/${product._id}`} >
+                      {product.name}
+                  </Link>
+                  </td>
                 <td className="py-3 px-6 text-gray-500 whitespace-nowrap">{product.category.name}</td>
               </tr>
             ))}

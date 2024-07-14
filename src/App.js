@@ -5,6 +5,7 @@ import NotFound from './components/NotFound';
 import ProductTable from './pages/ProductTable';
 import CreateProduct from './pages/CreateProduct';
 import Navbar from './components/Navbar';
+import UpdateProduct from './pages/UpdateProduct';
 // import Home from './pages/Home';
 // import Login from './pages/Login';
 // import Dashboard from './pages/Dashboard';
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route path='/' element={<ProductTable />} />
         <Route path='/create-product' element={<CreateProduct />} />
+        <Route path='/update-product/:id' element={<UpdateProduct />} />
         <Route path='*' element={<NotFound />} />
 
         {/* <Route path='/login' element={<Login />} />

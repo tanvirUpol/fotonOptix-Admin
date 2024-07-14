@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
@@ -8,9 +9,15 @@ import { MdKeyboardBackspace } from 'react-icons/md';
 import DataTable from '../components/DataTable';
 import { BsBoxSeam } from 'react-icons/bs';
 import toast, { Toaster } from 'react-hot-toast';
+import { useParams } from 'react-router-dom';
 
-const CreateProduct = () => {
+const UpdateProduct = () => {
+    let { id } = useParams();
+    console.log(id);
     const [subCategories, setSubCategories] = useState([]);
+    const [productData, setProductData] = useState(null)
+    const [showCaseImages, setShowCaseImages] = useState([])
+    const [diagram, setDiagram] = useState("")
     const [categories, setCategories] = useState([]);
     const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -29,11 +36,53 @@ const CreateProduct = () => {
     const [imageFiles, setImageFiles] = useState([]);
     const [schematicFile, setSchematicFile] = useState(null);
     const [data, setData] = useState([]);
-    const [rawData, setRawData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitLoad,setSubmitLoad] = useState(false)
 
-    
+
+    const fetchProduct = () => {
+        fetch(`https://fotonoptix.onrender.com/api/product/${id}`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWZ0eWtoYXIgUmFobWFuIiwiZW1haWwiOiJlZnR5a2hhcnJhaG1hbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwOTI3NTk1Mn0.J5EnGJ3QjAW8AsCMvjgrxEWCt-PT0OCRpT6H_PW4h5k`,
+                },
+            }
+        )
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    setProductData(data.product);
+                    setShowCaseImages(data.product.image)
+                    setDiagram(data.product.schematicDiagram)
+                    if (data.product.specifications.length > 0) {
+                        setData(data.product.specifications);
+                      } else if (data.product.specifications2.length > 0) {
+                        setData(data.product.specifications2);
+                      } else if (data.product.specifications3.length > 0) {
+                        setData(data.product.specifications3);
+                      } else if (data.product.customSpecifications?.length > 0) {
+                        setData(data.product.customSpecifications);
+                      }
+                    setFormData({
+                        ...formData,
+                        name: data.product.name,
+                        category: data.product.category._id,
+                        subcategory: data.product.subcategory._id,
+                        description: data.product.description,
+                        features: data.product.features.join(", "),
+                        applications: data.product.applications.join(", "),
+                        schematicDiagram: data.product.schematicDiagram,
+                        image: data.product.image
+
+                    })
+                }
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    }
+
+    console.log({data});
+
     const fetchCat = () => {
         fetch('https://fotonoptix.onrender.com/api/category?pageSize=9999&currentPage=')
             .then(response => response.json())
@@ -59,6 +108,7 @@ const CreateProduct = () => {
     useEffect(() => {
         fetchCat();
         fetchSubCat();
+        fetchProduct();
     }, []);
 
     const handleChange = (e) => {
@@ -67,7 +117,10 @@ const CreateProduct = () => {
             if (name === 'imageFiles') {
                 setImageFiles([...imageFiles, ...Array.from(files)]);
             }
-            if (name === 'schematicFile') setSchematicFile(files[0]);
+            if (name === 'schematicFile') {
+                setSchematicFile(files[0])
+                setDiagram("")
+            };
         } else {
             setFormData(prevState => ({ ...prevState, [name]: value }));
         }
@@ -78,15 +131,18 @@ const CreateProduct = () => {
         const file = document.querySelector(".images");
         file.value = "";
     };
+    const handleRemoveFetchedImage = (image) => {
+        setShowCaseImages(showCaseImages.filter((item) => item !== image));
+        const file = document.querySelector(".images");
+        file.value = "";
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitLoad(true)
-
         // Validation
         if (!formData.name || !formData.category || !formData.subcategory || !formData.description || !formData.features || !formData.applications) {
             toast.error("Please fill in all required fields.");
-            setSubmitLoad(false)
             return;
         }
 
@@ -105,15 +161,17 @@ const CreateProduct = () => {
 
         let submitData = {
             ...formData,
-            image: imageUrls.length ? imageUrls : formData.image,
+            image: imageUrls.length > 0 ? [...showCaseImages, ...imageUrls] : [...showCaseImages, ...imageUrls],
             schematicDiagram: schematicUrl ? schematicUrl : formData.schematicDiagram,
             features: formData.features.split(',').map(feature => feature.trim()),
             applications: formData.applications.split(',').map(app => app.trim()),
             customSpecifications: data
         };
 
-        fetch('http://localhost:8000/api/product', {
-            method: 'POST',
+        console.log(submitData);
+
+        fetch(`https://fotonoptix.onrender.com/api/product/${id}`, {
+            method: 'PATCH',
             headers: {
                 Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWZ0eWtoYXIgUmFobWFuIiwiZW1haWwiOiJlZnR5a2hhcnJhaG1hbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwOTI3NTk1Mn0.J5EnGJ3QjAW8AsCMvjgrxEWCt-PT0OCRpT6H_PW4h5k`,
                 "Content-Type": "application/json"
@@ -123,7 +181,7 @@ const CreateProduct = () => {
             .then(response => response.json())
             .then(data => {
                 if(data.status){
-                    toast.success('Product created successfully!');
+                    toast.success('Product updated successfully!');
                 }else{
                     toast.error(data.message)
                 }
@@ -133,7 +191,7 @@ const CreateProduct = () => {
                 console.error('Error:', error);
             });
 
-            setSubmitLoad(false)
+        setSubmitLoad(false)
     };
 
     const handleFileChange = async (e) => {
@@ -163,7 +221,6 @@ const CreateProduct = () => {
                         return stringRow;
                     });
 
-                    setRawData(jsonData);
 
                     function toCamelCase(str) {
                         return str
@@ -217,7 +274,6 @@ const CreateProduct = () => {
         e.preventDefault();
         setFile(null);
         setData([]);
-        setRawData([]);
     };
 
     return (
@@ -230,14 +286,14 @@ const CreateProduct = () => {
                 <div className='flex justify-between items-center mb-4'>
                     <h1 className="text-2xl font-bold  flex justify-center items-center gap-3">
                         <BsBoxSeam className='w-6 h-6' />
-                        Upload Product
+                        Update Product
                     </h1>
                     <button
                         type="submit"
                         disabled={submitLoad}
                         className="px-4 py-2 disabled:bg-gray-700  bg-teal-500 text-white rounded-md hover:bg-teal-600"
                     >
-                        {submitLoad? "Creating...": "Create Product"}
+                        {submitLoad? "Updating...": "Update Product"}
                     </button>
                 </div>
                 <hr className='my-4' />
@@ -275,7 +331,7 @@ const CreateProduct = () => {
                     >
                         <option value="">Select Subcategory</option>
                         {subCategories.map(subcategory => (
-                           formData.category === subcategory.category._id &&  <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
+                            formData.category === subcategory.category._id && <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
                         ))}
                     </select>
                 </div>
@@ -320,6 +376,24 @@ const CreateProduct = () => {
                         multiple
                     />
                     <div className="flex flex-wrap gap-2">
+                        {
+                            showCaseImages?.length > 0 && showCaseImages.map((file, index) => (
+                                <div key={index} className="relative">
+                                    <img
+                                        src={file}
+                                        alt="Preview"
+                                        className="w-16 h-16 object-cover rounded-md"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                                        onClick={() => handleRemoveFetchedImage(file)}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ))
+                        }
                         {imageFiles.map((file, index) => (
                             <div key={index} className="relative">
                                 <img
@@ -344,7 +418,7 @@ const CreateProduct = () => {
                         type="file"
                         name="schematicFile"
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 "
+                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4"
                     />
                 </div>
                 <div className='mb-4'>
@@ -353,6 +427,14 @@ const CreateProduct = () => {
                         alt="Preview"
                         className=" w-1/4 object-cover rounded-md border"
                     />}
+                    {
+                        diagram.length > 0 &&
+                        <img
+                        src={diagram}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />
+                    }
                 </div>
                 <div className="mb-4">
                     <label className="uppercase block text-gray-700 font-medium mb-2">Custom Specifications</label>
@@ -377,7 +459,7 @@ const CreateProduct = () => {
                         <CgSpinner className="animate-spin w-8 h-8 text-teal-500" />
                     </div>
                 ) : (
-                    file && data.length > 0 && (
+                     data.length > 0 && (
                         <DataTable data={data} />
                     )
                 )}
@@ -386,4 +468,4 @@ const CreateProduct = () => {
     );
 };
 
-export default CreateProduct;
+export default UpdateProduct;
