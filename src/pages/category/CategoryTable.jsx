@@ -198,7 +198,7 @@ const CategoryTable = () => {
 
 
     const handleDelete = async (id) => {
-        const userConfirmed = window.confirm("Are you sure you want to delete this sub category?");
+        const userConfirmed = window.confirm("Are you sure you want to delete this category?");
         
         if(userConfirmed){
             setSubmitLoad(true)
