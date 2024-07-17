@@ -1,21 +1,17 @@
-import { initializeApp } from 'firebase/app';
-import { getStorage } from 'firebase/storage';
+import { initializeApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCu5KhtC-Aje_ipHSrbnvjAxe3DeyFidrc",
-    authDomain: "opsapps-images.firebaseapp.com",
-    projectId: "opsapps-images",
-    storageBucket: "opsapps-images.appspot.com",
-    messagingSenderId: "1032121091911",
-    appId: "1:1032121091911:web:5ede42cf59c7976c996e62"
-  };
-  
+  apiKey: "AIzaSyCFWXshvAZXVmdqqOeHBJHpoKOcJf-ODuc",
+  authDomain: "foton-optix.firebaseapp.com",
+  projectId: "foton-optix",
+  storageBucket: "foton-optix.appspot.com",
+  messagingSenderId: "764835041322",
+  appId: "1:764835041322:web:34bb42c6846f1825bdf353",
+  measurementId: "G-309MB561MR",
+};
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
 export { storage };
-
-
-
-

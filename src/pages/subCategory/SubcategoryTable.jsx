@@ -6,6 +6,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { storage } from '../../firebase/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { BiEdit } from 'react-icons/bi';
+import { FcDeleteRow } from 'react-icons/fc';
+import { FiDelete } from 'react-icons/fi';
+import { LuDelete } from 'react-icons/lu';
+import { MdDeleteForever } from 'react-icons/md';
 
 const SubcategoryTable = () => {
     const [subcategories, setSubcategories] = useState([]);
@@ -122,7 +126,7 @@ const SubcategoryTable = () => {
 
         let imageURL = '';
         if (image) {
-            const iamgeRef = ref(storage, `subcategories/${formData.name}/${image.name}_sub`);
+            const iamgeRef = ref(storage, `subcategories/${formData.name}_${image.name}_sub`);
             const snapshot = await uploadBytes(iamgeRef, image);
             imageURL = await getDownloadURL(snapshot.ref);
         }
@@ -196,7 +200,7 @@ const SubcategoryTable = () => {
 
         let imageURL = '';
         if (image) {
-            const iamgeRef = ref(storage, `subcategories/${formData.name}/${image.name}_sub`);
+            const iamgeRef = ref(storage, `subcategories/${formData.name}_${image.name}_sub`);
             const snapshot = await uploadBytes(iamgeRef, image);
             imageURL = await getDownloadURL(snapshot.ref);
         }
@@ -237,8 +241,43 @@ const SubcategoryTable = () => {
         setImage(null)
     };
 
+    const handleDelete = async (id) => {
+        const userConfirmed = window.confirm("Are you sure you want to delete this sub category?");
+        
+        if(userConfirmed){
+            setSubmitLoad(true)
+
+            fetch(`https://fotonoptix.onrender.com/api/subcategory/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWZ0eWtoYXIgUmFobWFuIiwiZW1haWwiOiJlZnR5a2hhcnJhaG1hbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwOTI3NTk1Mn0.J5EnGJ3QjAW8AsCMvjgrxEWCt-PT0OCRpT6H_PW4h5k`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({isDeleted: true})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        console.log(data);
+                        toast.success('subcategory deleted successfully!');
+                        fetchSubcategories()
+                        setSubmitLoad(false)
+                    } else {
+                        toast.error(data.message)
+                        setSubmitLoad(false)
+                    }
+                })
+                .catch((error) => {
+                    toast.error('Error updating Subcategory.');
+                    console.error('Error:', error);
+                    setSubmitLoad(false)
+            
+                });
+        }
+    }
+
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-8 px-3">
             <Toaster
                 position="top-right"
                 reverseOrder={false}
@@ -345,9 +384,12 @@ const SubcategoryTable = () => {
                                     </td>
 
                                     <td className=" px-6 text-gray-900" >
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center gap-4">
                                             <button onClick={() => handleUpdateValues(subcategory)} className='hover:text-lime-500 font-normal text-green-600'>
                                                 <BiEdit className=' w-6 h-6' />
+                                            </button>
+                                            <button disabled={submitLoad} onClick={() => handleDelete(subcategory._id)} className='hover:text-white hover:bg-red-500 rounded-full p-1 font-normal text-red-500'>
+                                                <MdDeleteForever className=' w-6 h-6' />
                                             </button>
                                         </div>
                                     </td>

@@ -178,7 +178,7 @@ const Banner = () => {
     };
 
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-8 px-3">
             <Toaster
                 position="top-right"
                 reverseOrder={false}

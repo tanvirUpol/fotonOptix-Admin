@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { storage } from '../../firebase/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { BiEdit } from 'react-icons/bi';
+import { MdDeleteForever } from 'react-icons/md';
 
 const CategoryTable = () => {
     const [categories, setCategories] = useState([]);
@@ -95,7 +96,7 @@ const CategoryTable = () => {
 
         let bannerUrl = '';
         if (banner) {
-            const bannerRef = ref(storage, `new-products/${formData.name}/${banner.name}_sd`);
+            const bannerRef = ref(storage, `categories/${formData.name}_${banner.name}`);
             const snapshot = await uploadBytes(bannerRef, banner);
             bannerUrl = await getDownloadURL(snapshot.ref);
         }
@@ -155,7 +156,7 @@ const CategoryTable = () => {
 
         let bannerUrl = '';
         if (banner) {
-            const bannerRef = ref(storage, `new-products/${formData.name}/${banner.name}_sd`);
+            const bannerRef = ref(storage, `categories/${formData.name}_${banner.name}`);
             const snapshot = await uploadBytes(bannerRef, banner);
             bannerUrl = await getDownloadURL(snapshot.ref);
         }
@@ -195,8 +196,45 @@ const CategoryTable = () => {
         setBanner(null)
     };
 
+
+    const handleDelete = async (id) => {
+        const userConfirmed = window.confirm("Are you sure you want to delete this sub category?");
+        
+        if(userConfirmed){
+            setSubmitLoad(true)
+
+            fetch(`https://fotonoptix.onrender.com/api/category/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWZ0eWtoYXIgUmFobWFuIiwiZW1haWwiOiJlZnR5a2hhcnJhaG1hbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwOTI3NTk1Mn0.J5EnGJ3QjAW8AsCMvjgrxEWCt-PT0OCRpT6H_PW4h5k`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({isDeleted: true})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        console.log(data);
+                        toast.success('category deleted successfully!');
+                        fetchCategories()
+                        setSubmitLoad(false)
+                    } else {
+                        toast.error(data.message)
+                        setSubmitLoad(false)
+                    }
+                })
+                .catch((error) => {
+                    toast.error('Error updating category.');
+                    console.error('Error:', error);
+                    setSubmitLoad(false)
+            
+                });
+        }
+    }
+
+
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-8 px-3">
             <Toaster
                 position="top-right"
                 reverseOrder={false}
@@ -288,9 +326,12 @@ const CategoryTable = () => {
                                     </td>
 
                                     <td className=" px-6 text-gray-900" >
-                                        <div className="flex justify-center items-center">
+                                        <div className="flex justify-center items-center gap-4">
                                             <button onClick={() => handleUpdateValues(category)} className='hover:text-lime-500 font-normal text-green-600'>
                                                 <BiEdit className=' w-6 h-6' />
+                                            </button>
+                                            <button disabled={submitLoad} onClick={() => handleDelete(category._id)} className='hover:text-white hover:bg-red-500 rounded-full p-1 font-normal text-red-500'>
+                                                <MdDeleteForever className=' w-6 h-6' />
                                             </button>
                                         </div>
                                     </td>
