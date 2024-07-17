@@ -9,7 +9,7 @@ const ProductTable = () => {
 
   useEffect(() => {
     setIsLoading(true)
-    fetch('http://localhost:8000/api/product?pageSize=1000&currentPage=1')
+    fetch('https://fotonoptix.onrender.com/api/product?pageSize=1000&currentPage=1')
       .then(response => response.json())
       .then(data => {
         if (data.status) {
@@ -66,8 +66,8 @@ const ProductTable = () => {
                 <td className="px-6 font-medium text-gray-900">
                   <img src={product?.image[0]} className='w-7 h-7 border bg-slate-200' alt="" placeholder='image'/>
                 </td>
-                <td className="py-3 px-6 font-medium text-gray-900">
-                  <Link to={`update-product/${product._id}`} >
+                <td className=" px-6 font-medium text-gray-900">
+                  <Link className='py-3' to={`update-product/${product._id}`} >
                       {product.name}
                   </Link>
                   </td>

@@ -112,7 +112,7 @@ const CreateProduct = () => {
             customSpecifications: data
         };
 
-        fetch('http://localhost:8000/api/product', {
+        fetch('https://fotonoptix.onrender.com/api/product', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWZ0eWtoYXIgUmFobWFuIiwiZW1haWwiOiJlZnR5a2hhcnJhaG1hbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTcwOTI3NTk1Mn0.J5EnGJ3QjAW8AsCMvjgrxEWCt-PT0OCRpT6H_PW4h5k`,
