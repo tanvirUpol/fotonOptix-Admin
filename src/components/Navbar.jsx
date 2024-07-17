@@ -8,7 +8,10 @@ const Navbar = () => {
                 <Link to={""} className='font-semibold text-teal-500 text-xl'>Foton<span className='text-black'>Optix</span></Link>
                 <ul className='flex justify-between gap-5 font-medium text-base'>
                     <Link className='hover:text-teal-500' to={""}>Products</Link>
-                    <Link className='hover:text-teal-500' to={"/create-product"}>Create Product</Link>
+                    {/* <Link className='hover:text-teal-500' to={"/create-product"}>Create Product</Link> */}
+                    <Link className='hover:text-teal-500' to={"/categories"}>Categories</Link>
+                    <Link className='hover:text-teal-500' to={"/subcategories"}>Subcategories</Link>
+                    <Link className='hover:text-teal-500' to={"/banners"}>Banners</Link>
                 </ul>
             </nav>
         </section>

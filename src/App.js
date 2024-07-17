@@ -6,6 +6,9 @@ import ProductTable from './pages/ProductTable';
 import CreateProduct from './pages/CreateProduct';
 import Navbar from './components/Navbar';
 import UpdateProduct from './pages/UpdateProduct';
+import CategoryTable from './pages/category/CategoryTable';
+import SubcategoryTable from './pages/subCategory/SubcategoryTable';
+import Banner from './pages/Banner';
 // import Home from './pages/Home';
 // import Login from './pages/Login';
 // import Dashboard from './pages/Dashboard';
@@ -19,6 +22,9 @@ function App() {
         <Route path='/' element={<ProductTable />} />
         <Route path='/create-product' element={<CreateProduct />} />
         <Route path='/update-product/:id' element={<UpdateProduct />} />
+        <Route path='/banners' element={<Banner />} />
+        <Route path='/categories' element={<CategoryTable />} />
+        <Route path='/subcategories' element={<SubcategoryTable />} />
         <Route path='*' element={<NotFound />} />
 
         {/* <Route path='/login' element={<Login />} />
