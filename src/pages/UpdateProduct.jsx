@@ -383,7 +383,7 @@ const UpdateProduct = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Image Files</label>
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Product Images</label>
                     <input
                         type="file"
                         name="imageFiles"
@@ -428,30 +428,7 @@ const UpdateProduct = () => {
                         ))}
                     </div>
                 </div>
-                <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Schematic Diagram</label>
-                    <input
-                        type="file"
-                        name="schematicFile"
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4"
-                    />
-                </div>
-                <div className='mb-4'>
-                    {schematicFile && <img
-                        src={URL.createObjectURL(schematicFile)}
-                        alt="Preview"
-                        className=" w-1/4 object-cover rounded-md border"
-                    />}
-                    {
-                        diagram.length > 0 &&
-                        <img
-                        src={diagram}
-                        alt="Preview"
-                        className=" w-1/4 object-cover rounded-md border"
-                    />
-                    }
-                </div>
+                
 
 
                 {/* specification image */}
@@ -479,8 +456,9 @@ const UpdateProduct = () => {
                     />
                     }
                 </div>
+                {/* specification */}
                 <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Custom Specifications</label>
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Specifications File: (xlsx)</label>
                     <div className="flex ">
                         <input
                             type="file"
@@ -506,6 +484,32 @@ const UpdateProduct = () => {
                         <DataTable data={data} />
                     )
                 )}
+
+                {/* SCHEMATIC DIAGRAM */}
+                <div className="mb-4">
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Schematic Diagram</label>
+                    <input
+                        type="file"
+                        name="schematicFile"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4"
+                    />
+                </div>
+                <div className='mb-4'>
+                    {schematicFile && <img
+                        src={URL.createObjectURL(schematicFile)}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />}
+                    {
+                        diagram.length > 0 &&
+                        <img
+                        src={diagram}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />
+                    }
+                </div>
             </form>
         </div>
     );

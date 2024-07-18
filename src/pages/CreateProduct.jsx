@@ -32,9 +32,9 @@ const CreateProduct = () => {
     const [data, setData] = useState([]);
     const [rawData, setRawData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [submitLoad,setSubmitLoad] = useState(false)
+    const [submitLoad, setSubmitLoad] = useState(false)
 
-    
+
     const fetchCat = () => {
         fetch('https://fotonoptix.onrender.com/api/category?pageSize=9999&currentPage=')
             .then(response => response.json())
@@ -83,7 +83,7 @@ const CreateProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitLoad(true)
+
 
         // Validation
         if (!formData.name || !formData.category || !formData.subcategory || !formData.description || !formData.features || !formData.applications) {
@@ -91,6 +91,14 @@ const CreateProduct = () => {
             setSubmitLoad(false)
             return;
         }
+
+        if(data.length === 0 && !specificationImage){
+            const userConfirmed = window.confirm("No specifications image or file. Are you sure you want to upload the product?");
+            if(!userConfirmed){
+                return
+            }
+        }
+        setSubmitLoad(true)
 
         const imageUrls = await Promise.all(imageFiles.map(async (file) => {
             const imageRef = ref(storage, `new-products/${formData.name}/${file.name}`);
@@ -131,9 +139,9 @@ const CreateProduct = () => {
         })
             .then(response => response.json())
             .then(data => {
-                if(data.status){
+                if (data.status) {
                     toast.success('Product created successfully!');
-                }else{
+                } else {
                     toast.error(data.message)
                 }
             })
@@ -142,7 +150,7 @@ const CreateProduct = () => {
                 console.error('Error:', error);
             });
 
-            setSubmitLoad(false)
+        setSubmitLoad(false)
     };
 
     const handleFileChange = async (e) => {
@@ -246,7 +254,7 @@ const CreateProduct = () => {
                         disabled={submitLoad}
                         className="px-4 py-2 disabled:bg-gray-700  bg-teal-500 text-white rounded-md hover:bg-teal-600"
                     >
-                        {submitLoad? "Creating...": "Create Product"}
+                        {submitLoad ? "Creating..." : "Create Product"}
                     </button>
                 </div>
                 <hr className='my-4' />
@@ -284,7 +292,7 @@ const CreateProduct = () => {
                     >
                         <option value="">Select Subcategory</option>
                         {subCategories.map(subcategory => (
-                           formData.category === subcategory.category._id &&  <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
+                            formData.category === subcategory.category._id && <option key={subcategory._id} value={subcategory._id}>{subcategory.name}</option>
                         ))}
                     </select>
                 </div>
@@ -320,7 +328,7 @@ const CreateProduct = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Image Files</label>
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Product Images</label>
                     <input
                         type="file"
                         name="imageFiles"
@@ -347,22 +355,7 @@ const CreateProduct = () => {
                         ))}
                     </div>
                 </div>
-                <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Schematic Diagram</label>
-                    <input
-                        type="file"
-                        name="schematicFile"
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 "
-                    />
-                </div>
-                <div className='mb-4'>
-                    {schematicFile && <img
-                        src={URL.createObjectURL(schematicFile)}
-                        alt="Preview"
-                        className=" w-1/4 object-cover rounded-md border"
-                    />}
-                </div>
+
                 <div className="mb-4">
                     <label className="uppercase block text-gray-700 font-medium mb-2">Specifications Image</label>
                     <input
@@ -380,7 +373,7 @@ const CreateProduct = () => {
                     />}
                 </div>
                 <div className="mb-4">
-                    <label className="uppercase block text-gray-700 font-medium mb-2">Custom Specifications</label>
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Specifications File: (xlsx)</label>
                     <div className="flex ">
                         <input
                             type="file"
@@ -406,6 +399,24 @@ const CreateProduct = () => {
                         <DataTable data={data} />
                     )
                 )}
+
+                {/* SCHEMATIC DIAGRAM */}
+                <div className="mb-4">
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Schematic Diagram</label>
+                    <input
+                        type="file"
+                        name="schematicFile"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 "
+                    />
+                </div>
+                <div className='mb-4'>
+                    {schematicFile && <img
+                        src={URL.createObjectURL(schematicFile)}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />}
+                </div>
             </form>
         </div>
     );
