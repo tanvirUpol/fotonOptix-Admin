@@ -28,6 +28,7 @@ const CreateProduct = () => {
     });
     const [imageFiles, setImageFiles] = useState([]);
     const [schematicFile, setSchematicFile] = useState(null);
+    const [specificationImage, setSpecificationImage] = useState(null);
     const [data, setData] = useState([]);
     const [rawData, setRawData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -68,6 +69,7 @@ const CreateProduct = () => {
                 setImageFiles([...imageFiles, ...Array.from(files)]);
             }
             if (name === 'schematicFile') setSchematicFile(files[0]);
+            if (name === 'specificationImage') setSpecificationImage(files[0]);
         } else {
             setFormData(prevState => ({ ...prevState, [name]: value }));
         }
@@ -102,6 +104,12 @@ const CreateProduct = () => {
             const snapshot = await uploadBytes(schematicRef, schematicFile);
             schematicUrl = await getDownloadURL(snapshot.ref);
         }
+        let specificationImgURL = '';
+        if (specificationImage) {
+            const schematicRef = ref(storage, `new-products/${formData.name}/${specificationImage.name}_sd`);
+            const snapshot = await uploadBytes(schematicRef, specificationImage);
+            specificationImgURL = await getDownloadURL(snapshot.ref);
+        }
 
         let submitData = {
             ...formData,
@@ -109,7 +117,8 @@ const CreateProduct = () => {
             schematicDiagram: schematicUrl ? schematicUrl : formData.schematicDiagram,
             features: formData.features.split(',').map(feature => feature.trim()),
             applications: formData.applications.split(',').map(app => app.trim()),
-            customSpecifications: data
+            customSpecifications: data,
+            specificationImage: specificationImgURL ? specificationImgURL : formData?.specificationImage
         };
 
         fetch('https://fotonoptix.onrender.com/api/product', {
@@ -350,6 +359,22 @@ const CreateProduct = () => {
                 <div className='mb-4'>
                     {schematicFile && <img
                         src={URL.createObjectURL(schematicFile)}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />}
+                </div>
+                <div className="mb-4">
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Specifications Image</label>
+                    <input
+                        type="file"
+                        name="specificationImage"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 "
+                    />
+                </div>
+                <div className='mb-4'>
+                    {specificationImage && <img
+                        src={URL.createObjectURL(specificationImage)}
                         alt="Preview"
                         className=" w-1/4 object-cover rounded-md border"
                     />}

@@ -18,6 +18,7 @@ const UpdateProduct = () => {
     const [productData, setProductData] = useState(null)
     const [showCaseImages, setShowCaseImages] = useState([])
     const [diagram, setDiagram] = useState("")
+    const [fetchedSpecificationImage, setFetchedSpecificationImage] = useState("")
     const [categories, setCategories] = useState([]);
     const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -35,6 +36,7 @@ const UpdateProduct = () => {
     });
     const [imageFiles, setImageFiles] = useState([]);
     const [schematicFile, setSchematicFile] = useState(null);
+    const [specificationImage, setSpecificationImage] = useState(null);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitLoad,setSubmitLoad] = useState(false)
@@ -55,6 +57,7 @@ const UpdateProduct = () => {
                     setProductData(data.product);
                     setShowCaseImages(data.product.image)
                     setDiagram(data.product.schematicDiagram)
+                    setFetchedSpecificationImage(data.product?.specificationImage)
                     if (data.product.specifications.length > 0) {
                         setData(data.product.specifications);
                       } else if (data.product.specifications2.length > 0) {
@@ -73,7 +76,8 @@ const UpdateProduct = () => {
                         features: data.product.features.join(", "),
                         applications: data.product.applications.join(", "),
                         schematicDiagram: data.product.schematicDiagram,
-                        image: data.product.image
+                        image: data.product.image,
+                        specificationImage: data.product?.specificationImage
 
                     })
                 }
@@ -81,7 +85,7 @@ const UpdateProduct = () => {
             .catch(error => console.error('Error fetching products:', error));
     }
 
-    console.log({data});
+    // console.log({data});
 
     const fetchCat = () => {
         fetch('https://fotonoptix.onrender.com/api/category?pageSize=9999&currentPage=')
@@ -116,6 +120,10 @@ const UpdateProduct = () => {
         if (files) {
             if (name === 'imageFiles') {
                 setImageFiles([...imageFiles, ...Array.from(files)]);
+            }
+            if (name === 'specificationImage'){
+                setSpecificationImage(files[0])
+                setFetchedSpecificationImage("")
             }
             if (name === 'schematicFile') {
                 setSchematicFile(files[0])
@@ -159,16 +167,24 @@ const UpdateProduct = () => {
             schematicUrl = await getDownloadURL(snapshot.ref);
         }
 
+        let specificationImgURL = '';
+        if (specificationImage) {
+            const schematicRef = ref(storage, `new-products/${formData.name}/${specificationImage.name}_sd`);
+            const snapshot = await uploadBytes(schematicRef, specificationImage);
+            specificationImgURL = await getDownloadURL(snapshot.ref);
+        }
+
         let submitData = {
             ...formData,
             image: imageUrls.length > 0 ? [...showCaseImages, ...imageUrls] : [...showCaseImages, ...imageUrls],
             schematicDiagram: schematicUrl ? schematicUrl : formData.schematicDiagram,
             features: formData.features.split(',').map(feature => feature.trim()),
             applications: formData.applications.split(',').map(app => app.trim()),
-            customSpecifications: data
+            customSpecifications: data,
+            specificationImage: specificationImgURL ? specificationImgURL : formData?.specificationImage
         };
 
-        console.log(submitData);
+        // console.log(submitData);
 
         fetch(`https://fotonoptix.onrender.com/api/product/${id}`, {
             method: 'PATCH',
@@ -431,6 +447,33 @@ const UpdateProduct = () => {
                         diagram.length > 0 &&
                         <img
                         src={diagram}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />
+                    }
+                </div>
+
+
+                {/* specification image */}
+                <div className="mb-4">
+                    <label className="uppercase block text-gray-700 font-medium mb-2">Specification Image</label>
+                    <input
+                        type="file"
+                        name="specificationImage"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-4"
+                    />
+                </div>
+                <div className='mb-4'>
+                    {specificationImage && <img
+                        src={URL.createObjectURL(specificationImage)}
+                        alt="Preview"
+                        className=" w-1/4 object-cover rounded-md border"
+                    />}
+                    {
+                        fetchedSpecificationImage.length > 0 &&
+                        <img
+                        src={fetchedSpecificationImage}
                         alt="Preview"
                         className=" w-1/4 object-cover rounded-md border"
                     />
