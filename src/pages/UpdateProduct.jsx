@@ -33,6 +33,7 @@ const UpdateProduct = () => {
         schematicDiagram: '',
         applications: '',
         customSpecifications: '',
+        specificationImage: '',
     });
     const [imageFiles, setImageFiles] = useState([]);
     const [schematicFile, setSchematicFile] = useState(null);
@@ -452,6 +453,10 @@ const UpdateProduct = () => {
                         <img
                         src={fetchedSpecificationImage}
                         alt="Preview"
+                        onClick={()=> {
+                            setFetchedSpecificationImage("")
+                            setFormData({...formData, specificationImage: ""})
+                        }}
                         className=" w-1/4 object-cover rounded-md border"
                     />
                     }
